@@ -48,8 +48,8 @@ X1 = liftFun(X1);
 X2 = liftFun(X2);
  
 % Parameter matrices
-alpha = 0.01;
-
+alpha = 0.2;
+beta = 0.5;
 % Parametros del optimizador
 options = optimset('Display','iter',...
     'TolFun', 1e-8,...
@@ -62,7 +62,7 @@ options = optimset('Display','iter',...
 
 %% Initial Condition Optimization problem
 x0=ones(1,285).*rand(1,285);
-f_obj1 = @(x)  funcion_costo_DMD(x, length(t), X1, X2, Gamma, alpha, euler);
+f_obj1 = @(x)  funcion_costo_DMD(x, length(t), X1, X2, Gamma, alpha, beta, euler);
 tic
 
 %% Optimization Problem
@@ -126,11 +126,11 @@ G_l = [x(271);...
 C_l = eye(3,15);
 
 %% Intial conditions system
-v_estimate(:, 1) = (X1(:, 1));
+v_estimate(:, 1) = C_l*(X1(:, 1));
 
 for k= 1:length(X1)
     %% Output of the system
-    salida_es(:, k) = C_l*v_estimate(:, k);
+    salida_es(:, k) = v_estimate(:, k);
     Gamma_real = (X1(:, k));
     salida_real(:, k) = C_l*Gamma_real;
     
@@ -141,7 +141,7 @@ for k= 1:length(X1)
     R = Rot_zyx(euler(:, k));
    
     %% Evolution of the system
-    v_estimate(:, k+1) = A_l*v_estimate(:, k) + B_l*R*Gamma(:,k) + G_l;
+    v_estimate(:, k+1) = C_l*(A_l*liftFun(v_estimate(:, k)) + B_l*R*Gamma(:,k) + G_l);
 end
 
 figure

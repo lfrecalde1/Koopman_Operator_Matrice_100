@@ -1,7 +1,7 @@
-function [cost] = funcion_costo_DMD(x, N, X_1, X_K, U, alpha, euler)
+function [cost] = funcion_costo_DMD(x, N, X_1, X_K, U, alpha, beta, euler)
                                              
-he_xy = [];
-he_z = [];
+he_koop = [];
+he_prediction = [];
 %% Matrix system
 %% Model Of the system
 %% Model Of the system
@@ -55,17 +55,27 @@ G = [x(271);...
        x(284);...
        x(285)];
 
+C_l = eye(3,15);
+
 for k = 1:length(U)
 
-    %% Get Values 
+    
+    %% Normal Space
+    x_1 = C_l*X_1(:,k);
+    x_k = C_l*X_K(:,k);
+
+    %% Lift space
     Gamma_k = (X_K(:,k));
     Gamma_1 = (X_1(:,k));
+    
     R = Rot_zyx(euler(:,k));
-    error_xy = Gamma_k  -A*Gamma_1 - B*R*U(:,k) - G;
+    error_koop = Gamma_k  -A*Gamma_1 - B*R*U(:,k) - G;
+    
+    error_prediction = x_k - C_l*(A*Gamma_1 + B*R*U(:,k) + G);
     %% Error Vector
-    he_xy = [he_xy; error_xy(:)];
-    he_z = [he_z; [error_xy(3);]];
+    he_koop = [he_koop; error_koop];
+    he_prediction = [he_prediction; error_prediction];
 end
-cost = norm(he_xy,'fro')^2 +alpha*norm(A, 1) + alpha*norm(B, 1) + alpha*norm(G, 1);
+cost = beta*norm(he_koop, 2)^2 + alpha*norm(A, 'fro') + alpha*norm(B, 'fro') + alpha*norm(G, 'fro') + norm(he_prediction, 2)^2;
 
 end

@@ -1,4 +1,4 @@
-function [cost] = funcion_costo_koopman(x, N, X_1, X_K, U, alpha, beta)
+function [cost] = funcion_costo_koopman(x, N, X_1, X_K, U, alpha, beta, cent_a)
                                              
 he_koop = [];
 he_prediction = [];
@@ -38,14 +38,12 @@ for k = 1:length(U)
 
     %% Minimization Koopman
     % %% Lifdted space system
-    x_1 = C_a*X_1(:,k);
-    x_k = C_a*X_K(:,k);
 
-    Gamma_k = (X_K(:,k));
-    Gamma_1 = (X_1(:,k));
+    Gamma_k = liftFun(X_K(:,k), cent_a, rbf_type);
+    Gamma_1 = liftFun(X_1(:,k), cent_a, rbf_type);
     error_koop = Gamma_k  -A*Gamma_1 - B*U(:,k) ;
     
-    error_prediction = x_k - C_a*(A*Gamma_1 + B*U(:,k));
+    error_prediction = X_K(:,k) - C_a*(A*Gamma_1 + B*U(:,k));
     %% Error Vector
     he_koop = [he_koop; error_koop];
     he_prediction = [he_prediction; error_prediction];

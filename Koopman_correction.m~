@@ -39,11 +39,11 @@ liftFun = @(xx)( [
                  ]);
              
 
-%% Lifdted space system
-X1 = liftFun(X1);
-
-%% State K+1
-X2 = liftFun(X2);
+% %% Lifdted space system
+% X1 = liftFun(X1);
+% 
+% %% State K+1
+% X2 = liftFun(X2);
  
 %% Input K
 
@@ -100,10 +100,10 @@ B_a = [x(145), x(146), x(147);...
  
 C_a = [eye(6,6), zeros(6,6)];
 
-v_estimate(:, 1) = C_a*(X1(:, 1));
+v_estimate(:, 1) = (X1(:, 1));
 for k= 1:length(X1)
     %% Output of the system
-    salida_es(:, k) = v_estimate(:, k);
+    salida_es(:, k) = C_a*v_estimate(:, k);
     Gamma_real = (X1(:, k));
     salida_real(:, k) = C_a*Gamma_real;
     
@@ -113,7 +113,7 @@ for k= 1:length(X1)
     
     
     %% Evolution of the system
-    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:,k));
+    v_estimate(:, k+1) = A_a*v_estimate(:, k) + B_a*Gamma(:,k);
     
 end
 

@@ -98,6 +98,7 @@ y_linear_estimate(:, 1) = C_l*v_linear_estimate(:, 1);
 v_angular_estimate(:, 1) = liftFun_angular(angular_states(:, 1));
 y_angular_estimate(:, 1) = C_a*v_angular_estimate(:, 1);
 tic
+
 for k= 1:length(t)
     
     %% Output of the system lineal
