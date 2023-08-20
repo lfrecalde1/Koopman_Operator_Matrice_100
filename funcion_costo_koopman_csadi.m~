@@ -1,4 +1,4 @@
-function [A_final, B_final] = funcion_costo_koopman_csadi(X_1, X_K, U, alpha, beta, n, m)
+function [A_final, B_final] = funcion_costo_koopman_csadi(X_1, X_K, U, alpha, beta, n, m, n_normal)
 %% Load Casadi to the path of matlab 
 addpath('/home/fer/casadi-linux-matlabR2014b-v3.4.5');
 import casadi.*;
@@ -11,7 +11,8 @@ he_prediction = [];
 A = MX.sym('A', n, n);
 B = MX.sym('B', n, m);
 
-C_a = [eye(6,6), zeros(6,6)];
+C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
+
 
 for k = 1:length(U)
 
@@ -22,8 +23,14 @@ for k = 1:length(U)
 
     Gamma_k = (X_K(:,k));
     Gamma_1 = (X_1(:,k));
+    factor = zeros(n, 1);
+    for j =1:size(U,1)
+        
+        factor = factor + B(1:n, j*n -(n-1):j*n)*x*U(j, k)
+        
+        
+    end
     error_koop = Gamma_k  -A*Gamma_1 - B*U(:,k) ;
-    
     error_prediction = x_k - C_a*(A*Gamma_1 + B*U(:,k));
     %% Error Vector
     he_koop = [he_koop; error_koop];
@@ -48,8 +55,8 @@ nlprob = struct('f', obj, 'x', OPT_variables);
 %% Solver of the problem
 solver = nlpsol('solver', 'ipopt', nlprob);
 %% Initial Conditions System
-A_0 = rand(12, 12)*0.1;
-B_0 = rand(12, 3)*0.1;
+A_0 = rand(n, n)*0.1;
+B_0 = rand(n, m)*0.1;
 
 args.x0 = [reshape(A_0,size(A_0,1)*size(A_0,2),1);reshape(B_0,size(B_0,1)*size(B_0,2),1)]; % initial value of the optimization variables
 

@@ -11,7 +11,7 @@ he_prediction = [];
 A = MX.sym('A', n, n);
 B = MX.sym('B', n, m);
 
-C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
+C_a = [eye(n_normal,n_normal), zeros(n_normal, n - n_normal)];
 
 
 for k = 1:length(U)
@@ -32,7 +32,7 @@ for k = 1:length(U)
     
 end
 %% Optimization Problem
-obj = beta*norm(he_koop, 2)^2 + alpha*norm(A, 'fro') + alpha*norm(B, 'fro') + norm(he_prediction, 2)^2;
+obj = beta*norm(he_koop, 2)^2 + alpha*norm(A, 'fro') + alpha*norm(B, 'fro') + 1.5*norm(he_prediction, 2)^2;
 
 %% General Vector Optimziation Variables
 OPT_variables = [reshape(A,size(A,1)*size(A,2),1);reshape(B,size(B,1)*size(B,2),1)];

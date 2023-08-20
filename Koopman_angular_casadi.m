@@ -66,7 +66,6 @@ for k= 1:length(X1)
     error(:, k) = salida_real(:,k) - salida_es(:, k);
     norm_error(k) = norm(error(:, k), 2);
     
-    
     %% Evolution of the system
     v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:,k));
     
