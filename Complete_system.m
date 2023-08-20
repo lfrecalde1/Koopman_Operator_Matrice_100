@@ -91,12 +91,10 @@ liftFun_angular = @(xx)( [
                  ]);
                          
 %% Initial linear velocities
-v_linear_estimate(:, 1) = liftFun_lineal(u_w(:, 1));
-y_linear_estimate(:, 1) = C_l*v_linear_estimate(:, 1);
+v_linear_estimate(:, 1) = u_w(:, 1);
 
 %% Initial angular velocities
-v_angular_estimate(:, 1) = liftFun_angular(angular_states(:, 1));
-y_angular_estimate(:, 1) = C_a*v_angular_estimate(:, 1);
+v_angular_estimate(:, 1) = angular_states(:, 1);
 tic
 
 for k= 1:length(t)
@@ -106,7 +104,7 @@ for k= 1:length(t)
     salida_real_lineal(:, k) = C_l*Gamma_real_lineal;
     
     %% Error of the estimation
-    error_l(:, k) = salida_real_lineal(:,k) - y_linear_estimate(:, k);
+    error_l(:, k) = salida_real_lineal(:,k) - v_linear_estimate(:, k);
     norm_error_l(k) = norm(error_l(:, k), 2);
     
     %% Output of the system angular
@@ -114,19 +112,14 @@ for k= 1:length(t)
     salida_real_angular(:, k) = C_a*Gamma_real_angular;
     
     %% Error of the estimation
-    error_a(:, k) = salida_real_angular(:,k) - y_angular_estimate(:, k);
+    error_a(:, k) = salida_real_angular(:,k) - v_angular_estimate(:, k);
     norm_error_a(k) = norm(error_a(:, k), 2);
     
-    R = Rot_zyx(y_angular_estimate(:, k));
+    R = Rot_zyx(v_angular_estimate(:, k));
    
     %% Evolution of the system
-    v_angular_estimate(:, k+1) = A_a*v_angular_estimate(:, k) + B_a*T_ref(2:4, k);
-    y_angular_estimate(:, k+1) = C_a*v_angular_estimate(:, k);
-    
-    
-    
-    v_linear_estimate(:, k+1) = A_l*v_linear_estimate(:, k) + B_l*R*[0;0;T_ref(1,k)] + G_l;
-    y_linear_estimate(:, k+1) = C_l*v_linear_estimate(:, k);
+    v_angular_estimate(:, k+1) = C_a*(A_a*liftFun_angular(v_angular_estimate(:, k)) + B_a*T_ref(2:4, k));
+    v_linear_estimate(:, k+1) = C_l*(A_l*liftFun_lineal(v_linear_estimate(:, k)) + B_l*R*[0;0;T_ref(1,k)] + G_l);
 
 end
 toc
@@ -137,7 +130,7 @@ set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(3,1,1)
 plot(salida_real_lineal(1,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(y_linear_estimate(1,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_linear_estimate(1,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 grid on;
 legend({'${{v_x}}$','$\hat{v_x}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
@@ -147,7 +140,7 @@ ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 subplot(3,1,2)
 plot(salida_real_lineal(2,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(y_linear_estimate(2,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_linear_estimate(2,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'${v_y}$','$\hat{v_y}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
@@ -156,7 +149,7 @@ set(gcf, 'Color', 'w'); % Sets axes background
 subplot(3,1,3)
 plot(salida_real_lineal(3,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(y_linear_estimate(3,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_linear_estimate(3,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'${v_z}$','$\hat{v_z}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
@@ -181,7 +174,7 @@ set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(3,1,1)
 plot(salida_real_angular(1,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(y_angular_estimate(1,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_angular_estimate(1,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 grid on;
 legend({'${{\phi}}$','$\hat{\phi}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
@@ -191,7 +184,7 @@ ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 subplot(3,1,2)
 plot(salida_real_angular(2,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(y_angular_estimate(2,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_angular_estimate(2,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'${\theta}$','$\hat{\theta}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
@@ -200,7 +193,7 @@ set(gcf, 'Color', 'w'); % Sets axes background
 subplot(3,1,3)
 plot(salida_real_angular(3,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(y_angular_estimate(3,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_angular_estimate(3,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'${\psi}$','$\hat{\psi}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
@@ -213,7 +206,7 @@ set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(3,1,1)
 plot(salida_real_angular(4,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(y_angular_estimate(4,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_angular_estimate(4,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 grid on;
 legend({'$\dot{{\phi}}$','$\dot{\hat{\phi}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
@@ -223,7 +216,7 @@ ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 subplot(3,1,2)
 plot(salida_real_angular(5,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(y_angular_estimate(5,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_angular_estimate(5,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'$\dot{{\theta}}$','$\dot{\hat{\theta}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
@@ -232,7 +225,7 @@ set(gcf, 'Color', 'w'); % Sets axes background
 subplot(3,1,3)
 plot(salida_real_angular(6,1:length(t)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(y_angular_estimate(6,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(v_angular_estimate(6,1:length(t)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'${\dot{\psi}}$','$\dot{\hat{\psi}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
