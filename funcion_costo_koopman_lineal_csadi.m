@@ -14,7 +14,6 @@ G = MX.sym('G', n, 1);
 
 C_a = [eye(n_normal,n_normal), zeros(n_normal, n - n_normal)];
 
-
 for k = 1:length(U)
 
     %% Minimization Koopman
@@ -25,6 +24,8 @@ for k = 1:length(U)
     Gamma_k = (X_K(:,k));
     Gamma_1 = (X_1(:,k));
     R = Rot_zyx(euler(:,k));
+%     R_t = [R, zeros(3, 3);...
+%            zeros(3,3), R];
     
     error_koop = Gamma_k  -A*Gamma_1 - B*R*U(:,k) -G;
     
@@ -35,7 +36,7 @@ for k = 1:length(U)
     
 end
 %% Optimization Problem
-obj = beta*norm(he_koop, 2)^2 + alpha*norm(A, 'fro') + alpha*norm(B, 'fro') + alpha*norm(G, 'fro') + 2*norm(he_prediction, 2)^2;
+obj = beta*norm(he_koop, 2)^2 + alpha*norm(A, 'fro') + alpha*norm(B, 'fro') + alpha*norm(G, 'fro') + 5*norm(he_prediction, 2)^2;
 
 %% General Vector Optimziation Variables
 OPT_variables = [reshape(A,size(A,1)*size(A,2),1);reshape(B,size(B,1)*size(B,2),1);reshape(G,size(G,1)*size(G,2),1)];

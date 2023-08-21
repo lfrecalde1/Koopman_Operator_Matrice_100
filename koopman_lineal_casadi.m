@@ -3,14 +3,14 @@
 clc, clear all, close all;
 
 %% Load information
-load("Data_mujoco_1.mat");
+load("Data_mujoco_2.mat");
 des = 1;
 
 %% Get the data of the system
 [Data_2_X_k, Data_2_X_1, Data_2_U_1, euler2] = get_data_simple_velocities(h, hp, t, T_ref);
 
 
-load("Data_mujoco_2.mat");
+load("Data_mujoco_1.mat");
 des = 1;
 
 %% Get the data of the system
@@ -25,7 +25,8 @@ n_normal = size(X1,1);
 %% Input K
 Gamma = [Data_1_U_1, Data_2_U_1];
 
-euler = [euler1, euler2];
+load("euler_estimado.mat")
+euler = [euler_estimado];
 %% Lifted Matrices
 n = 3; 
 
@@ -33,8 +34,8 @@ n = 3;
 % RBF 1 Centers
 Nrbf = 2;            
 
-cent_l = rand(n, 5)*2 - 1;   
-cent_lz = rand(n, 2)*2 - 1; 
+cent_l = rand(n, 4)*2 - 1;   
+cent_lz = rand(n, 4)*2 - 1; 
 rbf_type = 'gauss';             % type of function - one of 'thinplate', 'gauss', 'invquad', 'polyharmonic'
 
 %% Lift Space parameters
@@ -77,7 +78,9 @@ for k= 1:length(X1)
     error(:, k) = salida_real(:,k) - salida_es(:, k);
     norm_error(k) = norm(error(:, k), 2);
     
-    R = Rot_zyx(euler(:, k));
+    R = Rot_zyx(euler(:,k));
+%     R_t = [R, zeros(3, 3);...
+%         zeros(3,3), R];
    
     %% Evolution of the system
     v_estimate(:, k+1) = C_l*(A_l*liftFun(v_estimate(:, k)) + B_l*R*Gamma(:,k) + G_l);
@@ -132,7 +135,7 @@ legend('boxoff')
 title('$\textrm{Error estimation}$','Interpreter','latex','FontSize',9);
 set(gcf, 'Color', 'w'); % Sets axes background
 export_fig norm_estimation_velocities_koopman.pdf -q101
-
+save("matrices_lineal.mat", "A_l", "B_l", "G_l", "C_l", "cent_l", "cent_lz")
 figure
 imagesc(A_l);
 
