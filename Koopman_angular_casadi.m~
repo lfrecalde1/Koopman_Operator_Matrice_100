@@ -3,28 +3,36 @@ clc, clear all, close all;
 
 
 %% Load experimentatl information
-load("h_2.mat");
-load("hp_2.mat");
-load("T_ref_2.mat");
-load("t_2.mat");
-
+% load("h_2.mat");
+% load("hp_2.mat");
+% load("T_ref_2.mat");
+% load("t_2.mat");
+load("Data_mujoco_1.mat");
 %% geta Matrices of the system
 [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, t, T_ref);
+
+% load("h_3.mat");
+% load("hp_3.mat");
+% load("T_ref_3.mat");
+% load("t_3.mat");
+load("Data_mujoco_2.mat");
+[Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, t, T_ref);
+
 %% Rearrange data in order to develp DMD ext
 %% State K
-X1 = [Data_2_X_1];
+X1 = [Data_2_X_1, Data_1_X_1];
 
 %% State K+1
-X2 = [Data_2_X_k];
+X2 = [Data_2_X_k, Data_1_X_k];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_2_U_1];
+Gamma = [Data_2_U_1, Data_1_U_1];
 
 %% Lifted Matrices
 n_a = 6; 
 
 %% Matrix values for RBF aproximation
-Nrbf = 2;            
+Nrbf = ;            
 
 cent_a = rand(n_a,Nrbf)*2 - 1;   
 rbf_type = 'gauss';             % type of function - one of 'thinplate', 'gauss', 'invquad', 'polyharmonic'
@@ -34,10 +42,7 @@ liftFun = @(xx)( [
                  xx; 
                  rbf(xx(4,:),cent_a,rbf_type); 
                  rbf(xx(5,:), cent_a,rbf_type);
-                 rbf(xx(6,:), cent_a,rbf_type);
-                 1*ones(1, length(xx));...
-                 1*ones(1, length(xx));...
-                 1*ones(1, length(xx))]);
+                 rbf(xx(6,:), cent_a,rbf_type)]);
              
 
 %% Lifdted space system
@@ -67,16 +72,10 @@ for k= 1:length(X1)
     %% Error of the estimation
     error(:, k) = salida_real(:,k) - salida_es(:, k);
     norm_error(k) = norm(error(:, k), 2);
-    factor = 
-    for j =1:length(u)
-        
-        factor = factor + B(1:n, j*n -(n-1):j*n)*Gamma_1*U(j, k);
-        
-        
-    end
+    
     
     %% Evolution of the system
-    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:,k));
+    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:, k));
     
 end
 

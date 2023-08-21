@@ -3,35 +3,29 @@
 clc, clear all, close all;
 
 %% Load information
-load("h_3.mat");
-load("hp_3.mat");
-load("T_ref_3.mat");
-load("t_3.mat");
+load("Data_mujoco_1.mat");
 des = 1;
 
 %% Get the data of the system
 [Data_2_X_k, Data_2_X_1, Data_2_U_1, euler2] = get_data_simple_velocities(h, hp, t, T_ref);
 
 
-load("h_2.mat");
-load("hp_2.mat");
-load("T_ref_2.mat");
-load("t_2.mat");
+load("Data_mujoco_2.mat");
 des = 1;
 
 %% Get the data of the system
 [Data_1_X_k, Data_1_X_1, Data_1_U_1, euler1] = get_data_simple_velocities(h, hp, t, T_ref);
 
 %% State K
-X1 = [Data_2_X_1, Data_1_X_1];
+X1 = [Data_1_X_1, Data_2_X_1];
 
 %% State K+1
-X2 = [Data_2_X_k, Data_1_X_k];
+X2 = [Data_1_X_k, Data_2_X_k];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_2_U_1/100, Data_1_U_1/100];
+Gamma = [Data_1_U_1, Data_2_U_1];
 
-euler = [euler2, euler1];
+euler = [euler1, euler2];
 %% Lifted Matrices
 n = 3; 
 
@@ -63,7 +57,7 @@ m = size(Gamma, 1);
 
 % Parameter matrices
 alpha = 0.2;
-beta = 0.5;
+beta = 0.2;
 % Parametros del optimizador
 
 %% Optimization Problem
@@ -101,7 +95,7 @@ grid on;
 legend({'${{v_x}}$','$\hat{v_x}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 title('$\textrm{Angles estimation}$','Interpreter','latex','FontSize',9);
-ylabel('$[rad]$','Interpreter','latex','FontSize',9);
+ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
 
 subplot(3,1,2)
 plot(salida_real(2,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
@@ -109,7 +103,7 @@ grid on;
 plot(salida_es(2,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'${v_y}$','$\hat{v_y}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
-ylabel('$[rad]$','Interpreter','latex','FontSize',9);
+ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
 set(gcf, 'Color', 'w'); % Sets axes background
 
 subplot(3,1,3)
@@ -118,7 +112,7 @@ grid on;
 plot(salida_es(3,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 legend({'${v_z}$','$\hat{v_z}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
-ylabel('$[rad]$','Interpreter','latex','FontSize',9);
+ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
 
 set(gcf, 'Color', 'w'); % Sets axes background
 export_fig velocities_estimation_koopman.pdf -q101

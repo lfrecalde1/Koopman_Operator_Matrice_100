@@ -1,17 +1,15 @@
 %% Data Figure
 %% Clear variables
 clc, clear all, close all;
+load("Data_mujoco_2.mat")
+% %% Load information
+% load("h_3.mat");
+% load("hp_3.mat");
+% load("u_3.mat");
+% load("T_ref_3.mat");
+% load("vz_d_3.mat");
+% load("t_3.mat");
 
-%% Load information
-load("h_3.mat");
-load("hp_3.mat");
-load("u_3.mat");
-load("T_ref_3.mat");
-load("vz_d_3.mat");
-load("t_3.mat");
-
-% Desired Velocity body_frame
-z_b_d = 0.7*cos(0.5*t)+0.2*sin(0.4*t);
 %% Norm Trust
 T_ref(1, :) = T_ref(1,:)/100;
 p = hp(4, :);
@@ -33,7 +31,7 @@ subplot(4,1,1)
 plot(t(1:length(t)),vz_d(1,1:length(t)),'-','Color',[105, 123, 216]/255,'linewidth',1); hold on
 grid on;
 plot(t(1:length(t)),u(3,1:length(t)),'--','Color',[105, 123, 216]/255,'linewidth',1); hold on
-legend({'${trust}$','$~^b\dot{z}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend({'$~^b\dot{z}_d$','$~^b\dot{z}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 title('$\textrm{Identification signals and real Signals}$','Interpreter','latex','FontSize',9);
 ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
