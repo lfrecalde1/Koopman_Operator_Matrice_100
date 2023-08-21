@@ -23,9 +23,11 @@ for k = 1:length(U)
 
     Gamma_k = (X_K(:,k));
     Gamma_1 = (X_1(:,k));
-    error_koop = Gamma_k  -A*Gamma_1 - B*U(:,k) ;
+
     
-    error_prediction = x_k - C_a*(A*Gamma_1 + B*U(:,k));
+    error_koop = Gamma_k  -A*Gamma_1 - B*U(:,k);
+    
+    error_prediction = x_k - C_a*(A*Gamma_1 + B*U(:, k));
     %% Error Vector
     he_koop = [he_koop; error_koop];
     he_prediction = [he_prediction; error_prediction];
