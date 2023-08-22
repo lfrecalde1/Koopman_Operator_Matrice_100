@@ -26,7 +26,7 @@ n_normal = size(X1,1);
 Gamma = [Data_1_U_1, Data_2_U_1];
 
 load("euler_estimado.mat")
-euler = [euler_estimado];
+euler = [euler1, euler2];
 %% Lifted Matrices
 n = 3; 
 

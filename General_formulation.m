@@ -8,7 +8,7 @@ load("matrices_angular.mat");
 
 
 %% Load information
-load("Data_mujoco_2.mat");
+load("Data_mujoco_1.mat");
 des = 1;
 
 T_ref(1, :) = T_ref(1, :);
@@ -258,3 +258,16 @@ legend({'$||e_{estimation}||$'},'Interpreter','latex','FontSize',11,'Orientation
 legend('boxoff')
 title('$\textrm{Error estimation}$','Interpreter','latex','FontSize',9);
 
+save("matrices_complete.mat", "A", "B", "G", "C", "cent_l", "cent_lz", "cent_a")
+
+figure
+imagesc(A);
+
+figure
+imagesc(B);
+
+figure
+imagesc(G);
+
+figure
+imagesc(C);

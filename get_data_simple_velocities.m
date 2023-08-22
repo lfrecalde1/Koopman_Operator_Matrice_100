@@ -6,7 +6,7 @@ des =1;
 
 %% Load Data System Pose
 h = h(:, des:end-1);
-
+%u = u(:, des:end-1);
 %% Load Data Velocities
 hp = hp(:, des:end-1);
 p = hp(4, :);
@@ -48,7 +48,7 @@ X = [hp(1:3,:)];
 
 %% Control Signal
 U_ref = [0*u_ref(1, :);...
-         0*u_ref(1, :);...
+         0*u_ref(1, :);
          u_ref(1, :)];
      
 %% Rearrange data in order to develp DMD ext

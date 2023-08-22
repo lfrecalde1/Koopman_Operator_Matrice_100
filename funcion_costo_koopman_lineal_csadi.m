@@ -24,6 +24,7 @@ for k = 1:length(U)
     Gamma_k = (X_K(:,k));
     Gamma_1 = (X_1(:,k));
     R = Rot_zyx(euler(:,k));
+    %R = eye(3, 3);
 %     R_t = [R, zeros(3, 3);...
 %            zeros(3,3), R];
     
