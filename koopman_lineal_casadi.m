@@ -64,7 +64,9 @@ beta = 0.2;
 %% Optimization Problem
 [A_l, B_l, G_l] = funcion_costo_koopman_lineal_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal, euler);
 C_l = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
-
+G_real = zeros(n, 1);
+G_real(3, 1) = -3.91;
+G_l = G_l + G_real;
 %% Intial conditions system
 v_estimate(:, 1) = C_l*(X1(:, 1));
 
@@ -83,7 +85,7 @@ for k= 1:length(X1)
 %         zeros(3,3), R];
    
     %% Evolution of the system
-    v_estimate(:, k+1) = C_l*(A_l*liftFun(v_estimate(:, k)) + B_l*R*Gamma(:,k) + G_l);
+    v_estimate(:, k+1) = C_l*(A_l*liftFun(v_estimate(:, k)) + B_l*R*Gamma(:,k) + G_l );
 end
 
 figure
@@ -136,6 +138,26 @@ title('$\textrm{Error estimation}$','Interpreter','latex','FontSize',9);
 set(gcf, 'Color', 'w'); % Sets axes background
 export_fig norm_estimation_velocities_koopman.pdf -q101
 save("matrices_lineal.mat", "A_l", "B_l", "G_l", "C_l", "cent_l", "cent_lz")
+
+figure
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [4 2]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition', [0 0 10 4]);
+
+
+plot(Gamma(3,1:length(X2)),'-','Color',[26,115,160]/255,'linewidth',1); hold on
+grid on;
+legend({'$f_z$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[N]$','Interpreter','latex','FontSize',9);
+
+
+
+
+set(gcf, 'Color', 'w'); % Sets axes background
+export_fig Forces_and_torque.pdf -q101
+
 figure
 imagesc(A_l);
 

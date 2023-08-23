@@ -20,13 +20,13 @@ load("Data_mujoco_1.mat");
 
 %% Rearrange data in order to develp DMD ext
 %% State K
-X1 = [Data_1_X_1, Data_2_X_1];
+X1 = [Data_1_X_1];
 
 %% State K+1
-X2 = [Data_1_X_k, Data_2_X_k];
+X2 = [Data_1_X_k];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_1_U_1, Data_2_U_1];
+Gamma = [Data_1_U_1];
 
 %% Lifted Matrices
 n_a = 6; 
@@ -170,3 +170,6 @@ imagesc(A_a);
 
 figure
 imagesc(B_a);
+
+%% Final error 
+norm(norm_error, 2)
