@@ -161,8 +161,7 @@ grid on;
 legend({'$||e_{estimation}||$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 title('$\textrm{Error estimation}$','Interpreter','latex','FontSize',9);
-set(gcf, 'Color', 'w'); % Sets axes background
-export_fig norm_angles_estimation_koopman.pdf -q101
+
 
 save("matrices_angular.mat", "A_a", "B_a", "C_a", "cent_a")
 euler_estimado = v_estimate;
