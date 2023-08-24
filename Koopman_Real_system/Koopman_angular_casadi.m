@@ -117,8 +117,6 @@ legend({'${\psi}$','$\hat{\psi}$'},'Interpreter','latex','FontSize',11,'Orientat
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
-set(gcf, 'Color', 'w'); % Sets axes background
-export_fig angles_estimation_koopman.pdf -q101
 
 figure
 set(gcf, 'PaperUnits', 'inches');
@@ -151,42 +149,6 @@ legend({'${\dot{\psi}}$','$\dot{\hat{\psi}}$'},'Interpreter','latex','FontSize',
 legend('boxoff')
 ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 
-set(gcf, 'Color', 'w'); % Sets axes background
-export_fig euler_p_estimation_koopman.pdf -q101
-
-figure
-set(gcf, 'PaperUnits', 'inches');
-set(gcf, 'PaperSize', [4 2]);
-set(gcf, 'PaperPositionMode', 'manual');
-set(gcf, 'PaperPosition', [0 0 10 4]);
-subplot(3,1,1)
-plot(salida_real(10,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(v_estimate(10,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-grid on;
-legend({'$v_x$','$\hat{v_x}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
-legend('boxoff')
-title('$\textrm{Angular velocity estimation}$','Interpreter','latex','FontSize',9);
-ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
-
-subplot(3,1,2)
-plot(salida_real(11,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-grid on;
-plot(v_estimate(11,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'$v_y$','$\hat{v_y}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
-legend('boxoff')
-ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
-set(gcf, 'Color', 'w'); % Sets axes background
-
-subplot(3,1,3)
-plot(salida_real(12,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-grid on;
-plot(v_estimate(12,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'${v_z}$','$\hat{v_z}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
-legend('boxoff')
-ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
-
-set(gcf, 'Color', 'w'); % Sets axes background
-export_fig velocities_estimation_koopman.pdf -q101
 
 figure
 set(gcf, 'PaperUnits', 'inches');

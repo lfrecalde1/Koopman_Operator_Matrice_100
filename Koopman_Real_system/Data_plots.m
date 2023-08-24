@@ -91,9 +91,6 @@ ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 xlabel('$\textrm{Time}[s]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
 
-set(gcf, 'Color', 'w'); % Sets axes background
-export_fig Velocities.pdf -q101
-% % 
 
 
 figure
@@ -120,8 +117,6 @@ ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
 xlabel('$\textrm{Time}[s]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
 
-set(gcf, 'Color', 'w'); % Sets axes background
-export_fig Forces_and_torque.pdf -q101
 
 % 
 figure
@@ -163,8 +158,7 @@ ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 xlabel('$\textrm{Time}[s]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
 
-set(gcf, 'Color', 'w'); % Sets axes background
-export_fig Rates_and_velocity.pdf -q101
+
 
 
 
@@ -208,6 +202,3 @@ legend('boxoff')
 ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
 xlabel('$\textrm{Time}[s]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
-
-set(gcf, 'Color', 'w'); % Sets axes background
-export_fig Forces_and_torque_angles.pdf -q101
