@@ -7,9 +7,9 @@ clc, clear all, close all;
 % load("hp_2.mat");
 % load("T_ref_2.mat");
 % load("t_2.mat");
-% load("Data_mujoco_2.mat");
-% %% geta Matrices of the system
-% [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, u, t, T_ref);
+load("Data_DJI_2.mat");
+%% geta Matrices of the system
+[Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
 % load("h_3.mat");
 % load("hp_3.mat");
@@ -20,13 +20,13 @@ load("Data_DJI_1.mat");
 
 %% Rearrange data in order to develp DMD ext
 %% State K
-X1 = [Data_1_X_1];
+X1 = [Data_1_X_1, Data_2_X_1];
 
 %% State K+1
-X2 = [Data_1_X_k];
+X2 = [Data_1_X_k, Data_2_X_k];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_1_U_1];
+Gamma = [Data_1_U_1, Data_2_U_1];
 
 %% Lifted Matrices
 n_a = 3; 
