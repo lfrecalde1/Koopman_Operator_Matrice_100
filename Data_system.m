@@ -1,7 +1,7 @@
 %% Data Figure
 %% Clear variables
 clc, clear all, close all;
-load("Data_mujoco_2.mat")
+load("Data_mujoco_1.mat")
 % %% Load information
 % load("h_3.mat");
 % load("hp_3.mat");

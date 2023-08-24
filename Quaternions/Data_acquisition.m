@@ -20,7 +20,7 @@ w_ref = Signals(4,:);
 
 %% Ros Configuration
 rosshutdown
-rosinit('192.168.1.106', 'NodeHost', '192.168.1.106', 'Nodename', '/Matlab');
+rosinit('192.168.88.244', 'NodeHost', '192.168.88.244', 'Nodename', '/Matlab');
 
 %% Ros topics names
 robot_references = rospublisher('/cmd_vel');
@@ -71,4 +71,4 @@ T_ref = [F(3, :);...
 vz_d = un_ref(:, :);
 %% Save Data System
 %save("Data_mujoco.mat", "ts", "t", "ul_ref", "um_ref", "un_ref", "w_ref", "h", "hp", "T", "F", "omega_ref")
-save("Data_mujoco_2.mat", "ts", "t", "T_ref", "h", "hp", "vz_d", "u", "ul_ref", "um_ref", "un_ref", "w_ref")
+save("Data_mujoco_1.mat", "ts", "t", "T_ref", "h", "hp", "vz_d", "u", "ul_ref", "um_ref", "un_ref", "w_ref")

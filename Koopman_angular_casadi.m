@@ -9,14 +9,14 @@ clc, clear all, close all;
 % load("t_2.mat");
 load("Data_mujoco_2.mat");
 %% geta Matrices of the system
-[Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, t, T_ref);
+[Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
 % load("h_3.mat");
 % load("hp_3.mat");
 % load("T_ref_3.mat");
 % load("t_3.mat");
 load("Data_mujoco_1.mat");
-[Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, t, T_ref);
+[Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
 %% Rearrange data in order to develp DMD ext
 %% State K
@@ -29,20 +29,29 @@ n_normal = size(X1,1);
 Gamma = [Data_1_U_1, Data_2_U_1];
 
 %% Lifted Matrices
-n_a = 6; 
+n_a = 3; 
 
 %% Matrix values for RBF aproximation
-Nrbf = 4;            
+Nrbf = 2;            
 
 cent_a = rand(n_a,Nrbf)*2 - 1;   
 rbf_type = 'gauss';             % type of function - one of 'thinplate', 'gauss', 'invquad', 'polyharmonic'
 
 extra_param = 1;
 liftFun = @(xx)( [
-                 xx; 
-                 rbf(xx(4,:),cent_a,rbf_type); 
-                 rbf(xx(5,:), cent_a,rbf_type);
-                 rbf(xx(6,:), cent_a,rbf_type)]);
+                 xx;
+                 sin(xx(1, :)).*tan(xx(2, :));...
+                 cos(xx(1, :)).*tan(xx(2, :));...
+                 cos(xx(1, :));...
+                 sin(xx(1, :));...
+                 sin(xx(1,:))./cos(xx(2, :));...
+                 cos(xx(1,:))./cos(xx(2, :));...
+                 xx(7, :).*xx(8, :);...
+                 xx(7, :).*xx(9, :);...
+                 xx(8, :).*xx(9, :);...
+                 cos(xx(1,:)).*sin(xx(2, :)).*cos(xx(3, :)) + sin(xx(1, :)).*sin(xx(3, :));...
+                 cos(xx(1,:)).*sin(xx(2, :)).*sin(xx(3, :)) + sin(xx(1, :)).*cos(xx(3, :));...
+                 cos(xx(1, :)).*cos(xx(2, :))]);
              
 
 %% Lifdted space system
@@ -59,7 +68,7 @@ alpha = 0.2;
 beta = 0.2;
 
 %% Optimization Problem
-[A_a, B_a] = funcion_costo_koopman_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal);
+[A_a, B_a, G_a] = funcion_costo_koopman_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal);
 C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
 
 %%
@@ -76,7 +85,7 @@ for k= 1:length(X1)
     
     
     %% Evolution of the system
-    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:, k));
+    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:, k) + G_a);
     
 end
 
@@ -146,7 +155,41 @@ legend('boxoff')
 ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 
 set(gcf, 'Color', 'w'); % Sets axes background
-export_fig omega_estimation_koopman.pdf -q101
+export_fig euler_p_estimation_koopman.pdf -q101
+
+figure
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [4 2]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition', [0 0 10 4]);
+subplot(3,1,1)
+plot(salida_real(10,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+plot(v_estimate(10,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+grid on;
+legend({'$v_x$','$\hat{v_x}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+title('$\textrm{Angular velocity estimation}$','Interpreter','latex','FontSize',9);
+ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
+
+subplot(3,1,2)
+plot(salida_real(11,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(v_estimate(11,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'$v_y$','$\hat{v_y}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
+set(gcf, 'Color', 'w'); % Sets axes background
+
+subplot(3,1,3)
+plot(salida_real(12,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(v_estimate(12,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${v_z}$','$\hat{v_z}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[m/s]$','Interpreter','latex','FontSize',9);
+
+set(gcf, 'Color', 'w'); % Sets axes background
+export_fig velocities_estimation_koopman.pdf -q101
 
 figure
 set(gcf, 'PaperUnits', 'inches');
@@ -170,3 +213,6 @@ imagesc(A_a);
 
 figure
 imagesc(B_a);
+
+figure
+imagesc(G_a);

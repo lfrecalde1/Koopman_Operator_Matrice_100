@@ -3,7 +3,7 @@
 clc, clear all, close all;
 
 %% Load information
-load("Data_mujoco_2.mat");
+load("Data_mujoco_1.mat");
 
 %% Split Velocity
 ul = u(1, :);
@@ -219,3 +219,8 @@ legend('boxoff')
 ylabel('$[Nm]$','Interpreter','latex','FontSize',9);
 xlim([0 t(end)])
 
+for k = 1:length(ul_ref)
+   vd_world(:,k) =  Rot_zyx(h(8:10, k))*[ul_ref(1, k); um_ref(1, k); un_ref(1, k)];  
+end
+
+save("reference_world.mat", "vd_world")

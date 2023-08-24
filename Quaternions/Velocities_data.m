@@ -247,14 +247,14 @@ switch n
         %%
     case 12
         close all
-        ul_ref = 1*sign(sin(0.5*t));
-        um_ref = 2*sign(cos(0.5*t));
-        un_ref = 0.5*sign(sin(0.5*t));
-        w_ref = 0.3*sign(cos(0.3*t));
-%         ul_ref=3.5*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
-%         um_ref=3.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
-%         un_ref = 2*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
-%         w_ref = 0.3*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+%         ul_ref = 1*sign(sin(0.5*t));
+%         um_ref = 2*sign(cos(0.5*t));
+%         un_ref = 0.5*sign(sin(0.5*t));
+%         w_ref = 0.3*sign(cos(0.3*t));
+        ul_ref=3.5*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+        um_ref=3.5*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+        un_ref = 2*cos(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
+        w_ref = 0.3*sin(t).*sin(0.5*t)+0.3*cos(0.7*t).*cos(0.3*t);
         subplot(4,1,1)
         plot(ul_ref);
         subplot(4,1,2)

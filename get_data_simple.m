@@ -1,4 +1,4 @@
-function [X2, X1, Gamma] = get_data_simple(h, hp, t, u_ref)
+function [X2, X1, Gamma] = get_data_simple(h, hp, u, t, u_ref)
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
 %% Load Data experiment 1
@@ -6,7 +6,7 @@ des =1;
 
 %% Load Data System Pose
 h = h(:, des:end-1);
-
+u = u(:, des:end-1);
 %% Load Data Velocities
 hp = hp(:, des:end-1);
 p = hp(4, :);
@@ -46,12 +46,15 @@ psi_p = euler_p(3, :);
 
 %% generalized Data system
 X = [euler;...
-     euler_p];
+    euler_p;...
+    omega;...
+    hp(1:3,:)];
 
 %% Control Signal
 U_ref = [phi_ref;...
         theta_ref;...
-         w_ref];
+         w_ref;
+         u_ref(1, :)];
      
 %% Rearrange data in order to develp DMD ext
 
