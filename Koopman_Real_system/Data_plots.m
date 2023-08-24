@@ -3,12 +3,12 @@
 clc, clear all, close all;
 
 %% Load information
-load("h_5.mat");
-load("hp_5.mat");
-load("hdp_5.mat");
-load("rdp_5.mat");
-load("t_5.mat");
-load("u_ref_5.mat");
+load("h_6.mat");
+load("hp_6.mat");
+load("hdp_6.mat");
+load("rdp_6.mat");
+load("t_6.mat");
+load("u_ref_6.mat");
 
 for k = 1:length(h)
    u(:,k) =  inv(Rot_zyx(h(8:10, k)))*[hp(1, k); hp(2, k); hp(3, k)];  
@@ -45,7 +45,7 @@ T_ref = [u_ref(1,:);...
          u_ref(2,:);...
          u_ref(3, :);...
          u_ref(4,:)];
-save("Data_DJI_2.mat", "t", "T_ref", "h", "hp", "hdp", "u", "ul_ref", "um_ref", "un_ref", "w_ref")
+save("Data_DJI_3.mat", "t", "T_ref", "h", "hp", "hdp", "u", "ul_ref", "um_ref", "un_ref", "w_ref")
 
 % %% Images System
 figure
