@@ -41,14 +41,12 @@ OPT_variables = [reshape(A,size(A,1)*size(A,2),1);reshape(B,size(B,1)*size(B,2),
 nlprob = struct('f', obj, 'x', OPT_variables);
 % 
 opts = struct;
-opts.ipopt.max_iter = 20;
-opts.ipopt.print_level =3;%0,3
-opts.print_time = 1;
+opts.ipopt.max_iter = 10;
 opts.ipopt.acceptable_tol =1e-8;
 opts.ipopt.acceptable_obj_change_tol = 1e-6;
 
 %% Solver of the problem
-solver = nlpsol('solver', 'ipopt', nlprob, 'opts');
+solver = nlpsol('solver', 'ipopt', nlprob, opts);
 %% Initial Conditions System
 A_0 = eye(n, n)*0.1;
 B_0 = eye(n, m)*0.1;

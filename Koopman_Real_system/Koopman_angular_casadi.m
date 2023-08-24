@@ -7,26 +7,26 @@ clc, clear all, close all;
 % load("hp_2.mat");
 % load("T_ref_2.mat");
 % load("t_2.mat");
-load("Data_mujoco_1.mat");
-%% geta Matrices of the system
-[Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, t, T_ref);
+% load("Data_mujoco_2.mat");
+% %% geta Matrices of the system
+% [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
 % load("h_3.mat");
 % load("hp_3.mat");
 % load("T_ref_3.mat");
 % load("t_3.mat");
-load("Data_mujoco_2.mat");
-[Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, t, T_ref);
+load("Data_DJI_1.mat");
+[Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
 %% Rearrange data in order to develp DMD ext
 %% State K
-X1 = [Data_1_X_1, Data_2_X_1];
+X1 = [Data_1_X_1];
 
 %% State K+1
-X2 = [Data_1_X_k, Data_2_X_k];
+X2 = [Data_1_X_k];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_1_U_1, Data_2_U_1];
+Gamma = [Data_1_U_1];
 
 %% Lifted Matrices
 n_a = 3; 
@@ -48,10 +48,7 @@ liftFun = @(xx)( [
                  cos(xx(1,:))./cos(xx(2, :));...
                  xx(7, :).*xx(8, :);...
                  xx(7, :).*xx(9, :);...
-                 xx(8, :).*xx(9, :);...
-                 cos(xx(1,:)).*sin(xx(2, :)).*cos(xx(3, :)) + sin(xx(1, :)).*sin(xx(3, :));...
-                 cos(xx(1,:)).*sin(xx(2, :)).*sin(xx(3, :)) + sin(xx(1, :)).*cos(xx(3, :));...
-                 cos(xx(1, :)).*cos(xx(2, :))]);
+                 xx(8, :).*xx(9, :)]);
              
 
 %% Lifdted space system
@@ -64,8 +61,8 @@ X2 = liftFun(X2);
 n = size(X2, 1);
 m = size(Gamma, 1);
 %% Optimization  variables 
-alpha = 0.05;
-beta = 0.05;
+alpha = 0.2;
+beta = 0.2;
 
 %% Optimization Problem
 [A_a, B_a, G_a] = funcion_costo_koopman_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal);
