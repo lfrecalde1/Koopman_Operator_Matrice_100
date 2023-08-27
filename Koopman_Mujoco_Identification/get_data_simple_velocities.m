@@ -1,4 +1,4 @@
-function [X2, X1, Gamma] = get_data_simple(h, hp, u, t, u_ref)
+function [X2, X1, Gamma, euler] = get_data_simple_velocities(h, hp, u, t, u_ref)
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
 %% Load Data experiment 1
@@ -12,8 +12,7 @@ hp = hp(:, des:end-1);
 p = hp(4, :);
 q = hp(5, :);
 r = hp(6, :);
-omega = [p;q;r];
-quaternion = h(4:7, :);
+
 %% Load Time
 t = t(:,des:end);
 
@@ -45,19 +44,20 @@ theta_p = euler_p(2, :);
 psi_p = euler_p(3, :);
 
 %% generalized Data system
-X = [euler;...
-    omega];
+X = [hp(1:3,:)];
 
 %% Control Signal
-U_ref = [phi_ref;...
-        theta_ref;...
-         w_ref];
+U_ref = [0*u_ref(3, :);...
+         0*u_ref(2, :);
+         u_ref(1, :)];
      
 %% Rearrange data in order to develp DMD ext
 
 X1 = [X(:,1:end-1)];
   
 X2 = [X(:,2:end)];
-  
+
+euler = euler(:, 1:end-1);
+
 Gamma = U_ref(:,1:end-1);
 end

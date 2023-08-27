@@ -6,30 +6,31 @@ clc, clear all, close all;
 % load("h_2.mat");
 % load("hp_2.mat");
 % load("T_ref_2.mat");
-load("Data_DJI_3.mat");
-%% geta Matrices of the system
-[Data_3_X_k, Data_3_X_1, Data_3_U_1] = get_data_simple(h, hp, u, t, T_ref);
+% load("Data_DJI_3.mat");
+% %% geta Matrices of the system
+% [Data_3_X_k, Data_3_X_1, Data_3_U_1] = get_data_simple(h, hp, u, t, T_ref);
+% 
+% % 
+% load("Data_mujoco.mat");
+% %% geta Matrices of the system
+% [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
-load("Data_DJI_2.mat");
-%% geta Matrices of the system
-[Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, u, t, T_ref);
-
-% load("h_3.mat");
-% load("hp_3.mat");
-% load("T_ref_3.mat");
-% load("t_3.mat");
-load("Data_DJI_1.mat");
+% % load("h_3.mat");
+% % load("hp_3.mat");
+% % load("T_ref_3.mat");
+% % load("t_3.mat");
+load("Data_mujoco_1.mat");
 [Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
 %% Rearrange data in order to develp DMD ext
 %% State K
-X1 = [Data_1_X_1, Data_2_X_1, Data_3_X_1];
+X1 = [Data_1_X_1];
 
 %% State K+1
-X2 = [Data_1_X_k, Data_2_X_k];
+X2 = [Data_1_X_k];
 n_normal = size(X1,1);
 %% Input K
-Gamma = [Data_1_U_1, Data_2_U_1];
+Gamma = [Data_1_U_1];
 
 %% Lifted Matrices
 n_a = 3; 
@@ -49,9 +50,12 @@ liftFun = @(xx)( [
                  sin(xx(1, :));...
                  sin(xx(1,:))./cos(xx(2, :));...
                  cos(xx(1,:))./cos(xx(2, :));...
-                 xx(7, :).*xx(8, :);...
-                 xx(7, :).*xx(9, :);...
-                 xx(8, :).*xx(9, :)]);
+                 xx(4, :).*xx(5, :);...
+                 xx(4, :).*xx(6, :);...
+                 xx(5, :).*xx(6, :);...
+                 cos(xx(1, :)).*sin(xx(2, :)).*cos(xx(3, :)) + sin(xx(1, :)).* sin(xx(3, :));...
+                 cos(xx(1, :)).*sin(xx(2, :)).*sin(xx(3, :)) - sin(xx(1, :)).* cos(xx(3, :));...
+                 cos(xx(1, :)).*cos(xx(2, :))]);
              
 
 %% Lifdted space system
@@ -64,11 +68,11 @@ X2 = liftFun(X2);
 n = size(X2, 1);
 m = size(Gamma, 1);
 %% Optimization  variables 
-alpha = 0.2;
-beta = 0.2;
+alpha = 0.01;
+beta = 0.01;
 
 %% Optimization Problem
-[A_a, B_a, G_a] = funcion_costo_koopman_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal);
+[A_a, B_a] = funcion_costo_koopman_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal);
 C_a = [eye(n_normal,n_normal), zeros(n_normal, n-n_normal)];
 
 %%
@@ -85,7 +89,7 @@ for k= 1:length(X1)
     
     
     %% Evolution of the system
-    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:, k) + G_a);
+    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:, k));
     
 end
 
@@ -174,6 +178,3 @@ imagesc(A_a);
 
 figure
 imagesc(B_a);
-
-figure
-imagesc(G_a);
