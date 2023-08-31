@@ -60,7 +60,7 @@ for k = 1:N
 
     %% Funcion costo a minimizar 
     he = [he;X(1:3,k)-P(27*k+1:27*k+3)];
-    he_angular = [he_angular;X(15,k)-P(27*k+1:27*k+3)];
+    he_angular = [he_angular;X(15,k)-P(27*k+15)];
     u = [u;con];
     
     %% Actualizacion del sistema usando Euler runge kutta
@@ -74,9 +74,10 @@ end
 
 %% Cost final 
 Q = 1*eye(size(he,1));
-R = 0.005*eye(size(u,1));
+Q_1 = 0.1*eye(size(he_angular,1));
+R = 0.01*eye(size(u,1));
 %% FINAL COST
-obj = he'*Q*he+u'*R*u;
+obj = he'*Q*he+u'*R*u + he_angular'*Q_1*he_angular;
 
 % for k =1:N-1
 %     g = [g; U(1,k)-U(1,k+1) - 0.1];

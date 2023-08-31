@@ -75,7 +75,7 @@ end
 %% Cost final 
 Q = 1*eye(size(he,1));
 Q_1 = 0.1*eye(size(he_angular,1));
-R = 0.005*eye(size(u,1));
+R = 0.01*eye(size(u,1));
 %% FINAL COST
 obj = he'*Q*he+u'*R*u + he_angular'*Q_1*he_angular;
 

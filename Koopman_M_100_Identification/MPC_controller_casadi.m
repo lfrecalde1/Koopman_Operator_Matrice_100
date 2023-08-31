@@ -231,10 +231,10 @@ ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
 
 subplot(4,1,4)
-plot(t(1, 1:length(v_estimate)),v_estimate(3,:),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(t(1, 1:length(v_estimate)),v_estimate(9,:),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 grid on;
-plot(t(1, 1:length(v_estimate)),x_desired(3,1:length(v_estimate)),'-','Color',[50,76,10]/255,'linewidth',1); hold on
-legend({'$\hat{v_z}$', '${v_z}_d$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(t(1, 1:length(v_estimate)),x_desired(9,1:length(v_estimate)),'-','Color',[50,76,10]/255,'linewidth',1); hold on
+legend({'$\hat{\dot{\psi}}$', '$\dot{\psi}_d$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 

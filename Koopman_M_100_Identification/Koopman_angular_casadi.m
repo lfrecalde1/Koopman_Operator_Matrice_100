@@ -2,24 +2,34 @@
 clc, clear all, close all;
 
 
-%% Load experimentatl information
-% load("h_2.mat");
-% load("hp_2.mat");
-% load("T_ref_2.mat");
-% load("Data_DJI_3.mat");
-% %% geta Matrices of the system
-% [Data_3_X_k, Data_3_X_1, Data_3_U_1] = get_data_simple(h, hp, u, t, T_ref);
-% 
-% % 
-% load("Data_mujoco.mat");
-% %% geta Matrices of the system
-% [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, u, t, T_ref);
+%% Load information
+load("h_6.mat");
+load("hp_6.mat");
+load("hdp_6.mat");
+load("rdp_6.mat");
+load("t_6.mat");
+load("u_ref_6.mat");
 
-% % load("h_3.mat");
-% % load("hp_3.mat");
-% % load("T_ref_3.mat");
-% % load("t_3.mat");
-load("Data_mujoco_1.mat");
+%% Get Body Velocities 
+for k = 1:length(h)
+   u(:,k) =  inv(Rot_zyx(h(8:10, k)))*[hp(1, k); hp(2, k); hp(3, k)];  
+end
+
+for k =1:length(t)
+[euler_p(:, k)] = Euler_p(hp(4:6, k),h(8:10, k));
+end
+
+%% Split Velocity
+ul = u(1, :);
+um = u(2, :);
+un = u(3, :);
+p = hp(4, :);
+q = hp(5, :);
+r = hp(6, :);
+
+%% Split Forces and Torques
+T_ref = u_ref;
+
 [Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
 %% Rearrange data in order to develp DMD ext

@@ -10,15 +10,7 @@ clc, clear all, close all;
 % %% geta Matrices of the system
 % [Data_3_X_k, Data_3_X_1, Data_3_U_1] = get_data_simple(h, hp, u, t, T_ref);
 % 
-% % 
-% load("Data_mujoco.mat");
-% %% geta Matrices of the system
-% [Data_2_X_k, Data_2_X_1, Data_2_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
-% % load("h_3.mat");
-% % load("hp_3.mat");
-% % load("T_ref_3.mat");
-% % load("t_3.mat");
 load("Data_mujoco_1.mat");
 [Data_1_X_k, Data_1_X_1, Data_1_U_1] = get_data_simple(h, hp, u, t, T_ref);
 
@@ -44,29 +36,32 @@ rbf_type = 'gauss';             % type of function - one of 'thinplate', 'gauss'
 extra_param = 1;
 liftFun = @(xx)( [
                  xx;
-                 sin(xx(1, :)).*tan(xx(2, :)).*xx(5, :);...
-                 cos(xx(1, :)).*tan(xx(2, :)).*xx(6, :);...
-                 cos(xx(1, :)).*xx(5, :);...
-                 sin(xx(1, :)).*xx(6, :);...
-                 sin(xx(1,:))./cos(xx(2, :)).*xx(5, :);...
-                 cos(xx(1,:))./cos(xx(2, :)).*xx(6, :);...
+                 sin(xx(1, :)).*tan(xx(2, :));...
+                 cos(xx(1, :)).*tan(xx(2, :));...
+                 cos(xx(1, :));...
+                 sin(xx(1, :));...
+                 sin(xx(1,:))./cos(xx(2, :));...
+                 cos(xx(1,:))./cos(xx(2, :));...
                  xx(4, :).*xx(5, :);...
                  xx(4, :).*xx(6, :);...
-                 xx(5, :).*xx(6, :)]);
+                 xx(5, :).*xx(6, :);...
+                 cos(xx(1, :)).*sin(xx(2, :)).*cos(xx(3, :)) + sin(xx(1, :)).* sin(xx(3, :));...
+                 cos(xx(1, :)).*sin(xx(2, :)).*sin(xx(3, :)) - sin(xx(1, :)).* cos(xx(3, :));...
+                 cos(xx(1, :)).*cos(xx(2, :))]);
              
 
 %% Lifdted space system
-X1 = liftFun(X1);
+X1 = lift_space(X1);
 
 %% State K+1
-X2 = liftFun(X2);
+X2 = lift_space(X2);
 
 %% Size system 
 n = size(X2, 1);
 m = size(Gamma, 1);
 %% Optimization  variables 
-alpha = 0.01;
-beta = 0.01;
+alpha = 0.2;
+beta = 0.2;
 
 %% Optimization Problem
 [A_a, B_a] = funcion_costo_koopman_csadi(X1, X2, Gamma, alpha, beta, n, m, n_normal);
@@ -86,7 +81,7 @@ for k= 1:length(X1)
     
     
     %% Evolution of the system
-    v_estimate(:, k+1) = C_a*(A_a*liftFun(v_estimate(:, k)) + B_a*Gamma(:, k));
+    v_estimate(:, k+1) = C_a*(A_a*lift_space(v_estimate(:, k)) + B_a*Gamma(:, k));
     
 end
 
@@ -95,32 +90,39 @@ set(gcf, 'PaperUnits', 'inches');
 set(gcf, 'PaperSize', [4 2]);
 set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
-subplot(3,1,1)
+subplot(4,1,1)
 plot(salida_real(1,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 plot(salida_es(1,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 grid on;
-legend({'${{\phi}}$','$\hat{\phi}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend({'${{qw}}$','$\hat{qw}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 title('$\textrm{Angles estimation}$','Interpreter','latex','FontSize',9);
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
-subplot(3,1,2)
+subplot(4,1,2)
 plot(salida_real(2,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
 plot(salida_es(2,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'${\theta}$','$\hat{\theta}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend({'${qx}$','$\hat{qx}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 set(gcf, 'Color', 'w'); % Sets axes background
 
-subplot(3,1,3)
+subplot(4,1,3)
 plot(salida_real(3,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
 plot(salida_es(3,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'${\psi}$','$\hat{\psi}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend({'${qy}$','$\hat{qy}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
+subplot(4,1,4)
+plot(salida_real(4,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+grid on;
+plot(salida_es(4,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${qz}$','$\hat{qz}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend('boxoff')
+ylabel('$[rad]$','Interpreter','latex','FontSize',9);
 
 figure
 set(gcf, 'PaperUnits', 'inches');
@@ -128,28 +130,28 @@ set(gcf, 'PaperSize', [4 2]);
 set(gcf, 'PaperPositionMode', 'manual');
 set(gcf, 'PaperPosition', [0 0 10 4]);
 subplot(3,1,1)
-plot(salida_real(4,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
-plot(v_estimate(4,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+plot(salida_real(5,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+plot(v_estimate(5,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
 grid on;
-legend({'$\dot{{\phi}}$','$\dot{\hat{\phi}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+legend({'$p$','$\hat{p}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 title('$\textrm{Angular velocity estimation}$','Interpreter','latex','FontSize',9);
 ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 
 subplot(3,1,2)
-plot(salida_real(5,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+plot(salida_real(6,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(v_estimate(5,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'$\dot{\theta}$','$\dot{\hat{\theta}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(v_estimate(6,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'$q$','$\hat{q}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 set(gcf, 'Color', 'w'); % Sets axes background
 
 subplot(3,1,3)
-plot(salida_real(6,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
+plot(salida_real(7,1:length(X2)),'-','Color',[226,76,44]/255,'linewidth',1); hold on
 grid on;
-plot(v_estimate(6,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
-legend({'${\dot{\psi}}$','$\dot{\hat{\psi}}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
+plot(v_estimate(7,1:length(X2)),'--','Color',[100,76,10]/255,'linewidth',1); hold on
+legend({'${r}$','$\hat{r}$'},'Interpreter','latex','FontSize',11,'Orientation','horizontal');
 legend('boxoff')
 ylabel('$[rad/s]$','Interpreter','latex','FontSize',9);
 

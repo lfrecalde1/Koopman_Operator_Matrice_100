@@ -8,10 +8,34 @@ load("matrices_angular.mat");
 
 
 %% Load information
-load("Data_mujoco_1.mat");
+load("h_6.mat");
+load("hp_6.mat");
+load("hdp_6.mat");
+load("rdp_6.mat");
+load("t_6.mat");
+load("u_ref_6.mat");
+
+%% Get Body Velocities 
+for k = 1:length(h)
+   u(:,k) =  inv(Rot_zyx(h(8:10, k)))*[hp(1, k); hp(2, k); hp(3, k)];  
+end
+
+for k =1:length(t)
+[euler_p(:, k)] = Euler_p(hp(4:6, k),h(8:10, k));
+end
+
+%% Split Velocity
+ul = u(1, :);
+um = u(2, :);
+un = u(3, :);
+p = hp(4, :);
+q = hp(5, :);
+r = hp(6, :);
+
 des = 1;
 
-T_ref(1, :) = T_ref(1, :);
+%% Split Forces and Torques
+T_ref = u_ref;
 %% Time Definition
 ts = t(end)-t(end-1);
 
@@ -46,10 +70,6 @@ psi = h(10, :);
 euler = [phi;...
          theta;...
          psi];
-%% Get angular 
-for k =1:length(hp)
-[euler_p(:, k)] = Euler_p(hp(4:6, k),h(8:10, k));
-end
 
 %% Angular Velocities Body euler
 phi_p = euler_p(1, :);
@@ -90,18 +110,15 @@ rbf_type_angular = 'gauss';             % type of function - one of 'thinplate',
 extra_param = 1;
 liftFun_angular = @(xx)( [
                  xx;
-                 sin(xx(1, :)).*tan(xx(2, :));...
-                 cos(xx(1, :)).*tan(xx(2, :));...
-                 cos(xx(1, :));...
-                 sin(xx(1, :));...
-                 sin(xx(1,:))./cos(xx(2, :));...
-                 cos(xx(1,:))./cos(xx(2, :));...
+                 sin(xx(1, :)).*tan(xx(2, :)).*xx(5, :);...
+                 cos(xx(1, :)).*tan(xx(2, :)).*xx(6, :);...
+                 cos(xx(1, :)).*xx(5, :);...
+                 sin(xx(1, :)).*xx(6, :);...
+                 sin(xx(1,:))./cos(xx(2, :)).*xx(5, :);...
+                 cos(xx(1,:))./cos(xx(2, :)).*xx(6, :);...
                  xx(4, :).*xx(5, :);...
                  xx(4, :).*xx(6, :);...
-                 xx(5, :).*xx(6, :);...
-                 cos(xx(1, :)).*sin(xx(2, :)).*cos(xx(3, :)) + sin(xx(1, :)).* sin(xx(3, :));...
-                 cos(xx(1, :)).*sin(xx(2, :)).*sin(xx(3, :)) - sin(xx(1, :)).* cos(xx(3, :));...
-                 cos(xx(1, :)).*cos(xx(2, :))]);
+                 xx(5, :).*xx(6, :)]);
              
 liftFun = @(xx)( [
                  liftFun_lineal(xx(1:3,:)); 
@@ -126,7 +143,19 @@ v_linear_estimate(:, 1) = u_w(:, 1);
 v_angular_estimate(:, 1) = angular_states(:, 1);
 
 v_estimate(:, 1) = [v_linear_estimate(:,1);v_angular_estimate(:,1)];
-xlift(:, 1) = liftFun(v_estimate(:, 1))
+
+%% Desired Estates
+x_desired = [0*ones(1, length(t));...
+             0*ones(1, length(t));...
+             0*ones(1, length(t));...
+             0*ones(1, length(t));...
+             0*ones(1, length(t));...
+             0*ones(1, length(t));...
+             0*ones(1, length(t));...
+             0*ones(1, length(t));...
+             0*ones(1, length(t))];
+x_desire_lift = liftFun(x_desired);
+xlift(:, 1) = liftFun(v_estimate(:, 1));
 % 
 for k= 1:length(t)
     
@@ -286,16 +315,18 @@ grid on;
 legend('boxoff')
 title('$\textrm{X lift}$','Interpreter','latex','FontSize',9);
 
+figure
+set(gcf, 'PaperUnits', 'inches');
+set(gcf, 'PaperSize', [4 2]);
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperPosition', [0 0 10 4]);
+subplot(1,1,1)
+plot(x_desire_lift(:,1:length(t))','-','linewidth',1); hold on
+grid on;
+legend('boxoff')
+title('$\textrm{X desired lift}$','Interpreter','latex','FontSize',9);
+
 save("matrices_complete.mat", "A", "B", "G", "C", "cent_l", "cent_lz", "cent_a")
 
-figure
-imagesc(A);
 
-figure
-imagesc(B);
 
-figure
-imagesc(G);
-
-figure
-imagesc(C);
